@@ -3,6 +3,7 @@
 //
 #include "main.h"
 #include "menu.h"
+#include "game.h"
 #include "utils/input.h"
 #include "utils/display.h"
 #undef main
@@ -12,6 +13,12 @@ SDL_Surface *Surface;//表面
 SDL_Renderer *Renderer;//渲染器
 bool Keyboard[512];//记录键盘按键状态 0表示没有按下 1表示按下
 struct mouse Mouse;
+
+struct color Color = {
+       {255, 228, 225,255},{245, 255, 250,255},
+         {119 , 136, 153, 255},{255, 248, 220,255}
+};
+
 
 void Init();
 void Quit();
@@ -40,7 +47,6 @@ void Init() {
     if (TTF_Init() != 0) {
         SDL_Log("TTF_Init failed: %s", TTF_GetError());
     }
-    Input_Init();
 }
 
 void Quit() {

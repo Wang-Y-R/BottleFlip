@@ -5,9 +5,27 @@
 #ifndef BOTTLEFLIP_BLOCK_H
 #define BOTTLEFLIP_BLOCK_H
 
-void block_init(void);
+#include "common.h"
+extern struct block{
+    SDL_Texture *texture;
+    int kind;
+    float w;
+    float h;
+    float centerX;
+    float centerY;
+    struct block* nextBlock;
+}BlockHead;
 
-void block_draw(void);
+void Block_Init(void);
 
+void Block_Create(float playerCenterX,float playerCenterY,float distance,int kind,int direction);
+
+void Block_Draw(struct block *block);
+
+void Block_DrawShadow(struct block *block);
+
+void Block_Quit(void);
+
+void Block_Destroy(struct block * uselessBlock);
 
 #endif //BOTTLEFLIP_BLOCK_H

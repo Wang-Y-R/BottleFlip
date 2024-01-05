@@ -5,10 +5,13 @@
 #include "input.h"
 static SDL_Event Event;//事件
 
-void Input_Init(void) {
+void Input_Clear(void) {
     for (int i = 0; i < 512; ++i) {
         Keyboard[i]=0;
     }
+    Mouse.status = false;
+    Mouse.move = false;
+    while (SDL_PollEvent(&Event));
 }
 
 bool Input_GetEvent(void) {

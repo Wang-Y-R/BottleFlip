@@ -25,4 +25,10 @@ extern struct mouse{
     bool move;//false 表示没有移动 true移动了
 }Mouse;
 
+extern struct color {
+    SDL_Color MistyRose,MintCream,Gray,Cornsilk;
+}Color;
+
+
+
 #endif //BOTTLEFLIP_COMMON_H

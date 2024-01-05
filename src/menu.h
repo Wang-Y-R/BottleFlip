@@ -8,10 +8,14 @@
 #ifndef BOTTLEFLIP_MENU_H
 #define BOTTLEFLIP_MENU_H
 
-void Menu(void);
+bool Menu(void);
 
 static void Menu_Init(void);
 
 static void Menu_Draw(void);
+
+static bool Menu_Select(void);
+
+static bool Menu_StartAnimation(void);
 
 #endif //BOTTLEFLIP_MENU_H

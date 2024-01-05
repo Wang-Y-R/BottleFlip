@@ -52,56 +52,48 @@ build cmake_object_order_depends_target_BottleFlip: phony || CMakeFiles/BottleFl
 build CMakeFiles/BottleFlip.dir/main.c.obj: C_COMPILER__BottleFlip_unscanned_Debug D$:/codes/BottleFlip/src/main.c || cmake_object_order_depends_target_BottleFlip
   DEP_FILE = CMakeFiles\BottleFlip.dir\main.c.obj.d
   FLAGS = -g -fdiagnostics-color=always
-  INCLUDES = -ID:/codes/BottleFlip/src/./include
   OBJECT_DIR = CMakeFiles\BottleFlip.dir
   OBJECT_FILE_DIR = CMakeFiles\BottleFlip.dir
 
 build CMakeFiles/BottleFlip.dir/menu.c.obj: C_COMPILER__BottleFlip_unscanned_Debug D$:/codes/BottleFlip/src/menu.c || cmake_object_order_depends_target_BottleFlip
   DEP_FILE = CMakeFiles\BottleFlip.dir\menu.c.obj.d
   FLAGS = -g -fdiagnostics-color=always
-  INCLUDES = -ID:/codes/BottleFlip/src/./include
   OBJECT_DIR = CMakeFiles\BottleFlip.dir
   OBJECT_FILE_DIR = CMakeFiles\BottleFlip.dir
 
 build CMakeFiles/BottleFlip.dir/game.c.obj: C_COMPILER__BottleFlip_unscanned_Debug D$:/codes/BottleFlip/src/game.c || cmake_object_order_depends_target_BottleFlip
   DEP_FILE = CMakeFiles\BottleFlip.dir\game.c.obj.d
   FLAGS = -g -fdiagnostics-color=always
-  INCLUDES = -ID:/codes/BottleFlip/src/./include
   OBJECT_DIR = CMakeFiles\BottleFlip.dir
   OBJECT_FILE_DIR = CMakeFiles\BottleFlip.dir
 
 build CMakeFiles/BottleFlip.dir/player.c.obj: C_COMPILER__BottleFlip_unscanned_Debug D$:/codes/BottleFlip/src/player.c || cmake_object_order_depends_target_BottleFlip
   DEP_FILE = CMakeFiles\BottleFlip.dir\player.c.obj.d
   FLAGS = -g -fdiagnostics-color=always
-  INCLUDES = -ID:/codes/BottleFlip/src/./include
   OBJECT_DIR = CMakeFiles\BottleFlip.dir
   OBJECT_FILE_DIR = CMakeFiles\BottleFlip.dir
 
 build CMakeFiles/BottleFlip.dir/block.c.obj: C_COMPILER__BottleFlip_unscanned_Debug D$:/codes/BottleFlip/src/block.c || cmake_object_order_depends_target_BottleFlip
   DEP_FILE = CMakeFiles\BottleFlip.dir\block.c.obj.d
   FLAGS = -g -fdiagnostics-color=always
-  INCLUDES = -ID:/codes/BottleFlip/src/./include
   OBJECT_DIR = CMakeFiles\BottleFlip.dir
   OBJECT_FILE_DIR = CMakeFiles\BottleFlip.dir
 
 build CMakeFiles/BottleFlip.dir/utils/audio.c.obj: C_COMPILER__BottleFlip_unscanned_Debug D$:/codes/BottleFlip/src/utils/audio.c || cmake_object_order_depends_target_BottleFlip
   DEP_FILE = CMakeFiles\BottleFlip.dir\utils\audio.c.obj.d
   FLAGS = -g -fdiagnostics-color=always
-  INCLUDES = -ID:/codes/BottleFlip/src/./include
   OBJECT_DIR = CMakeFiles\BottleFlip.dir
   OBJECT_FILE_DIR = CMakeFiles\BottleFlip.dir\utils
 
 build CMakeFiles/BottleFlip.dir/utils/display.c.obj: C_COMPILER__BottleFlip_unscanned_Debug D$:/codes/BottleFlip/src/utils/display.c || cmake_object_order_depends_target_BottleFlip
   DEP_FILE = CMakeFiles\BottleFlip.dir\utils\display.c.obj.d
   FLAGS = -g -fdiagnostics-color=always
-  INCLUDES = -ID:/codes/BottleFlip/src/./include
   OBJECT_DIR = CMakeFiles\BottleFlip.dir
   OBJECT_FILE_DIR = CMakeFiles\BottleFlip.dir\utils
 
 build CMakeFiles/BottleFlip.dir/utils/input.c.obj: C_COMPILER__BottleFlip_unscanned_Debug D$:/codes/BottleFlip/src/utils/input.c || cmake_object_order_depends_target_BottleFlip
   DEP_FILE = CMakeFiles\BottleFlip.dir\utils\input.c.obj.d
   FLAGS = -g -fdiagnostics-color=always
-  INCLUDES = -ID:/codes/BottleFlip/src/./include
   OBJECT_DIR = CMakeFiles\BottleFlip.dir
   OBJECT_FILE_DIR = CMakeFiles\BottleFlip.dir\utils
 
@@ -116,7 +108,6 @@ build CMakeFiles/BottleFlip.dir/utils/input.c.obj: C_COMPILER__BottleFlip_unscan
 build D$:/codes/BottleFlip/bin/BottleFlip.exe: C_EXECUTABLE_LINKER__BottleFlip_Debug CMakeFiles/BottleFlip.dir/main.c.obj CMakeFiles/BottleFlip.dir/menu.c.obj CMakeFiles/BottleFlip.dir/game.c.obj CMakeFiles/BottleFlip.dir/player.c.obj CMakeFiles/BottleFlip.dir/block.c.obj CMakeFiles/BottleFlip.dir/utils/audio.c.obj CMakeFiles/BottleFlip.dir/utils/display.c.obj CMakeFiles/BottleFlip.dir/utils/input.c.obj
   FLAGS = -g
   LINK_LIBRARIES = -lSDL2  -lSDL2_image  -lSDL2_ttf  -lSDL2_mixer  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
-  LINK_PATH = -LD:/codes/BottleFlip/src/./lib
   OBJECT_DIR = CMakeFiles\BottleFlip.dir
   POST_BUILD = cd .
   PRE_LINK = cd .

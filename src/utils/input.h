@@ -8,7 +8,7 @@
 #include "SDL2/SDL.h"
 
 
-void Input_Init(void);
+void Input_Clear(void);
 bool Input_GetEvent(void);
 
 

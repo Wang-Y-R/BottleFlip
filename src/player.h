@@ -4,5 +4,31 @@
 
 #ifndef BOTTLEFLIP_PLAYER_H
 #define BOTTLEFLIP_PLAYER_H
+#include "SDL2/SDL.h"
+
+extern struct player{ //玩家信息
+    SDL_Texture *texture;
+    float x;
+    float y;
+    float w;
+    float h;
+    float centerX;
+    float centerY;
+    double angle;
+    int score;
+    int combo;
+    int statue;
+    int color;
+} Player;
+
+void Player_Init();
+
+void Player_Draw();
+
+void Player_GatherStrength();
+
+static void Player_Clear();
+
+void Player_Quit();
 
 #endif //BOTTLEFLIP_PLAYER_H

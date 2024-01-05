@@ -5,9 +5,6 @@ set(CMAKE_C_STANDARD 17)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../bin)
 
-include_directories(./include)
-link_directories(./lib)
-
 add_executable(BottleFlip common.h
         main.c main.h
         menu.c menu.h
