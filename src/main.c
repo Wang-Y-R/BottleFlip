@@ -4,6 +4,8 @@
 #include "main.h"
 #include "menu.h"
 #include "game.h"
+#include "SDL2/SDL_mixer.h"
+#include "SDL2/SDL_image.h"
 #include "utils/input.h"
 #include "utils/display.h"
 #undef main
@@ -16,9 +18,19 @@ struct mouse Mouse;
 
 struct color Color = {
        {255, 228, 225,255},{245, 255, 250,255},
-         {119 , 136, 153, 255},{255, 248, 220,255}
+         {119 , 136, 153, 255},{255, 248, 220,255},
+       {255,255,255,255},
 };
 
+Mix_Chunk *Music_buttonSelect;
+Mix_Chunk *Music_createBlock;
+Mix_Chunk *Music_failed;
+Mix_Chunk *Music_jumping;
+Mix_Chunk *Music_rising;
+Mix_Chunk *Music_start;
+Mix_Chunk *Music_pop;
+Mix_Chunk *Music_magicCube;
+Mix_Chunk *Music_changeColor;
 
 void Init();
 void Quit();
@@ -47,9 +59,30 @@ void Init() {
     if (TTF_Init() != 0) {
         SDL_Log("TTF_Init failed: %s", TTF_GetError());
     }
+    if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) == -1)
+        SDL_Log("%s", SDL_GetError());
+    Music_buttonSelect = Mix_LoadWAV("music/buttonSelect.wav");
+    Music_createBlock = Mix_LoadWAV("music/createBlock.wav");
+    Music_failed = Mix_LoadWAV("music/failed.wav");
+    Music_jumping = Mix_LoadWAV("music/jumping.wav");
+    Music_rising = Mix_LoadWAV("music/rising4.wav");
+    Music_start = Mix_LoadWAV("music/start.wav");
+    Music_pop = Mix_LoadWAV("music/pop.wav");
+    Music_magicCube = Mix_LoadWAV("music/magicCube.wav");
+    Music_changeColor = Mix_LoadWAV("music/changeColor.wav");
 }
 
 void Quit() {
+    Mix_FreeChunk(Music_buttonSelect);
+    Mix_FreeChunk(Music_createBlock);
+    Mix_FreeChunk(Music_failed);
+    Mix_FreeChunk(Music_jumping);
+    Mix_FreeChunk(Music_rising);
+    Mix_FreeChunk(Music_start);
+    Mix_FreeChunk(Music_magicCube);
+    Mix_FreeChunk(Music_changeColor);
+    Mix_Quit();
+    IMG_Quit();
     SDL_DestroyWindow(Window);
     SDL_DestroyRenderer(Renderer);
     SDL_DestroyWindowSurface(Window);

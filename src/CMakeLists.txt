@@ -11,7 +11,6 @@ add_executable(BottleFlip common.h
         game.c game.h
         player.c player.h
         block.c block.h
-        utils/audio.c utils/audio.h
         utils/display.c utils/display.h
         utils/input.c utils/input.h
 )

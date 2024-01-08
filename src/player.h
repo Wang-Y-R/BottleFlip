@@ -23,9 +23,11 @@ extern struct player{ //玩家信息
 
 void Player_Init();
 
-void Player_Draw();
+void Player_Draw(float percent);
 
 void Player_GatherStrength();
+
+void Player_ChangeTexture(int kind);
 
 static void Player_Clear();
 

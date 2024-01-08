@@ -46,14 +46,19 @@ static void Player_Clear() {
     Player.statue = Normal;
     Player.combo = Player.score = 0;
     Player.color = Grey;
-    Player.centerX = 150;
+    Player.centerX = WINDOW_WIDTH/2;
     Player.centerY = 650;
 }
 
-void Player_Draw() {
-    Player.x = Player.centerX - Player.w / 2;
-    Player.y = Player.centerY - Player.h;
-    Display_DrawPicture(Player.x,Player.y,Player.angle,NULL,Player.texture);
+void Player_Draw(float percent) {
+    Player.x = Player.centerX - (Player.w / 2)*percent;
+    Player.y = Player.centerY - (Player.h)*percent;
+    Display_DrawPicture(Player.x,Player.y,Player.w*percent,Player.h*percent,Player.angle,NULL,Player.texture);
+}
+
+void Player_ChangeTexture(int kind) {
+    Player.texture = PlayerTexture[kind];
+    Player.color = kind;
 }
 
 void Player_Quit() {

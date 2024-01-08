@@ -8,14 +8,15 @@
 #include <stdbool.h>
 
 #define PROJECT_NAME "BottleFlip" //项目名称
-#define WINDOW_WIDTH 800.0 //窗口宽度
+#define WINDOW_WIDTH 1000.0 //窗口宽度
 #define WINDOW_HEIGHT 870.0 //窗口高度
 #define Fps 60 //刷新率
-
+#define BLOCK_KINDS 9
 //全局变量
 extern SDL_Window *Window;//窗口
 extern SDL_Surface *Surface;//表面
 extern SDL_Renderer *Renderer;//渲染器
+extern SDL_Event Event;
 extern bool Keyboard[512];//记录键盘按键状态 0表示没有按下 1表示按下
 extern struct mouse{
     float x;//记录鼠标X坐标
@@ -26,9 +27,10 @@ extern struct mouse{
 }Mouse;
 
 extern struct color {
-    SDL_Color MistyRose,MintCream,Gray,Cornsilk;
+    SDL_Color MistyRose,MintCream,Gray,Cornsilk,White;
 }Color;
 
+//命名 全局变量开头大写，函数内则小写
 
 
 #endif //BOTTLEFLIP_COMMON_H

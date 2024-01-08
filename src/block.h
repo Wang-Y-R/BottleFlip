@@ -18,11 +18,13 @@ extern struct block{
 
 void Block_Init(void);
 
-void Block_Create(float playerCenterX,float playerCenterY,float distance,int kind,int direction);
+void Block_Create(float playerCenterX,float playerCenterY,float distance,int kind,int direction,float percent);
 
-void Block_Draw(struct block *block);
+void Block_Draw(struct block *block,float percent);
 
 void Block_DrawShadow(struct block *block);
+
+SDL_Texture *Block_QueryTexture(int kind,int index);
 
 void Block_Quit(void);
 
