@@ -11,7 +11,7 @@
 #define WINDOW_WIDTH 1000.0 //窗口宽度
 #define WINDOW_HEIGHT 870.0 //窗口高度
 #define Fps 60 //刷新率
-#define BLOCK_KINDS 13
+#define BLOCK_KINDS 18
 #define BackgroundColorKind 4
 //全局变量
 extern SDL_Window *Window;//窗口

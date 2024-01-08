@@ -8,7 +8,7 @@
 #include "utils/display.h"
 
 enum blockKind {
-    Blue,Green,Grey,Orange,Pink,Basic,Basic1,Basic2,Basic3,Basic4,Box,Cake,MagicCube,BlockKinds
+    Blue,Green,Grey,Orange,Pink,Basic,Basic1,Basic2,Basic3,Basic4,Basic5,Basic6,Box,Cake,Life,Luck,Music,MagicCube,BlockKinds
 };
 enum magicBlock {
     magicCube,MagicBlockKinds
@@ -23,7 +23,8 @@ static SDL_Texture *BlockTexture[BlockKinds-MagicBlockKinds];
 static char *BlockTexturePath[]={
     "picture/blue.png","picture/green.png","picture/grey.png","picture/orange.png","picture/pink.png",
     "picture/basic.png","picture/basic1.png","picture/basic2.png","picture/basic3.png","picture/basic4.png",
-    "picture/box.png","picture/cake.png",
+    "picture/basic5.png","picture/basic6.png","picture/box.png","picture/cake.png","picture/life.png",
+    "picture/luck.png","picture/music.png",
 };
 static SDL_Texture *ShadowTexture[2];
 static char *ShadowTexturePath[2]={

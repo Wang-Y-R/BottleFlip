@@ -15,7 +15,7 @@
 #include "utils/input.h"
 
 enum blockKind {
-    Blue,Green,Grey,Orange,Pink,Basic,Basic1,Basic2,Basic3,Basic4,Box,Cake,MagicCube,BlockKinds
+    Blue,Green,Grey,Orange,Pink,Basic,Basic1,Basic2,Basic3,Basic4,Basic5,Basic6,Box,Cake,Life,Luck,Music,MagicCube,BlockKinds
 };
 enum magicBlock {
     magicCube, MagicBlockKinds
