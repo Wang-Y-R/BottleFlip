@@ -21,6 +21,11 @@ struct color Color = {
          {119 , 136, 153, 255},{255, 248, 220,255},
        {255,255,255,255},
 };
+int CurrentColor;
+SDL_Color BackgroundColor[BackgroundColorKind] = {
+        {255, 228, 225,255},{255, 204, 255,255},{204,229,255,255},
+        {229,255,204,255},
+};
 
 Mix_Chunk *Music_buttonSelect;
 Mix_Chunk *Music_createBlock;
@@ -70,6 +75,7 @@ void Init() {
     Music_pop = Mix_LoadWAV("music/pop.wav");
     Music_magicCube = Mix_LoadWAV("music/magicCube.wav");
     Music_changeColor = Mix_LoadWAV("music/changeColor.wav");
+    CurrentColor = 0;
 }
 
 void Quit() {

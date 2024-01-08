@@ -16,7 +16,7 @@ bool Game(void);
 static void Game_Init(void);
 
 static void Game_DrawAll(void);
-static void Game_DrawText();
+static void Game_DrawText(void);
 static void Game_DrawBlockAndBackground(struct block *blockLink);
 static void Game_DrawBackground(void);
 
@@ -33,7 +33,7 @@ static bool Game_JumpAnimation(float strength);
 
 static int Game_Check(void);
 static void Game_Scroll(void);
-static void Game_BlockEventCheck(int kind);
+static bool Game_BlockEventCheck(int kind);
 
 static void Game_Quit(void);
 #endif //BOTTLEFLIP_GAME_H

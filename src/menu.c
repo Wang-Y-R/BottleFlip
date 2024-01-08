@@ -4,14 +4,19 @@
 
 #include "menu.h"
 #include "game.h"
+#include "setting.h"
 #include <SDL2/SDL_mixer.h>
 #include "utils/input.h"
 #include "utils/display.h"
 #define  Button_Width 300.0
 #define  Button_Height 70.0
+//标题
+char *title = "BottleFlip\0";
+static TTF_Font *FontTitle;
+float titleY;
 //按钮类型
 enum Select{
-    Start,Quit
+    Start,setting,Quit
 };
 //按钮相关内容
 typedef struct {
@@ -20,13 +25,14 @@ typedef struct {
     char *content;  //内容
     SDL_Color *color;//颜色
 }Button;
-int CurrentButton=0;//当前选择按钮
-//预设的颜色
-
+static int CurrentButton=0;//当前选择按钮
 //预设的按钮
-static Button button[2]={
+static Button button[3]={
         false, WINDOW_WIDTH/2-Button_Width/2,WINDOW_HEIGHT/2-Button_Height,
         Button_Width,Button_Height,"Start",&Color.MintCream,
+
+        false, WINDOW_WIDTH/2-Button_Width/2,WINDOW_HEIGHT/2-Button_Height,
+        Button_Width,Button_Height,"Setting",&Color.MintCream,
 
         false,WINDOW_WIDTH/2-Button_Width/2,WINDOW_HEIGHT/2+Button_Height,
         Button_Width,Button_Height,"Quit!!!!!",&Color.MintCream,
@@ -40,14 +46,16 @@ extern Mix_Chunk *Music_start;
 static void Menu_Init(void){
     CurrentButton = 0;
     Font = TTF_OpenFont("font/COOPBL.TTF",60);
+    FontTitle = TTF_OpenFont("font/COOPBL.TTF",150);
     if (Font == NULL) {
         SDL_Log("SDL_Menu_Init_LoadFont failed: %s", SDL_GetError());
     }
     button[CurrentButton].statue = 1;
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 3; ++i) {
         button[i].fRect.x = WINDOW_WIDTH/2-Button_Width/2;
         button[i].fRect.y = WINDOW_HEIGHT/2-Button_Height + i * 2 * Button_Height;
     }
+    titleY = 200;
 }
 //菜单主循环
 void Menu(void) {
@@ -61,19 +69,19 @@ void Menu(void) {
         }
         if (Keyboard[SDL_SCANCODE_DOWN] || Keyboard[SDL_SCANCODE_S]) { //玩家向下选择
             button[CurrentButton].statue = false;
-            CurrentButton = (CurrentButton+1) % 2;
+            CurrentButton = (CurrentButton+1) % 3;
             button[CurrentButton].statue = true;
             Mix_PlayChannel(-1,Music_buttonSelect,0);
         } else if (Keyboard[SDL_SCANCODE_UP]||Keyboard[SDL_SCANCODE_W]) { //向上选择
             button[CurrentButton].statue = false;
-            CurrentButton = (CurrentButton+2-1) % 2;
+            CurrentButton = (CurrentButton+3-1) % 3;
             button[CurrentButton].statue = true;
             Mix_PlayChannel(-1,Music_buttonSelect,0);
         } else if (Keyboard[SDL_SCANCODE_SPACE]||Keyboard[SDL_SCANCODE_KP_ENTER]) {  //玩家按空格或回车确认
             if (!Menu_Select()) return;
         } else if (Mouse.move) {                                        //玩家移动鼠标
             SDL_FPoint fPoint= {Mouse.x,Mouse.y};
-            for (int i = 0; i < 2; ++i) {
+            for (int i = 0; i < 3; ++i) {
                 if (SDL_PointInFRect(&fPoint,&button[i].fRect)) {
                     if (CurrentButton != i ) {
                         button[CurrentButton].statue = false;
@@ -101,15 +109,16 @@ void Menu(void) {
 
 
 static void Menu_Draw(void){                                            //绘制菜单界面
-    SDL_SetRenderDrawColor(Renderer,Color.MistyRose.r,Color.MistyRose.g,Color.MistyRose.b,Color.MistyRose.a);
+    SDL_SetRenderDrawColor(Renderer,BackgroundColor[CurrentColor].r,BackgroundColor[CurrentColor].g,BackgroundColor[CurrentColor].b,BackgroundColor[CurrentColor].a);
     SDL_RenderClear(Renderer);
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 3; ++i) {
         if (!button[i].statue){
             Display_FillFRect(&button[i].fRect, button[i].color);
         } else Display_FillFRect(&button[i].fRect, &Color.Cornsilk);
         Display_DrawTextByCentre(button[i].fRect.x + button[i].fRect.w / 2, button[i].fRect.y + button[i].fRect.h / 2,
                                  button[i].content, &Color.Gray, Font);
     }
+    Display_DrawTextByCentre(WINDOW_WIDTH/2,titleY,title,&Color.White,FontTitle);
     SDL_RenderPresent(Renderer);
 }
 
@@ -129,6 +138,9 @@ static bool Menu_Select(void) {                                         //玩家
         case Quit:
             Menu_Quit();
             return false;
+        case setting:
+            Setting();
+            break;
         default:
             break;
     }
@@ -139,13 +151,13 @@ static bool Menu_Select(void) {                                         //玩家
 static bool Menu_StartAnimation(void) {                                //游戏开始的菜单动画
     Input_Clear();
     float speed = -20,accelerate = 1,h = 0;
-    while (button[0].fRect.y-button[0].fRect.h+h <= WINDOW_HEIGHT) {
+    while (titleY+h <= WINDOW_HEIGHT) {
         if(!Input_GetEvent()){
             return false;
         }
-        SDL_SetRenderDrawColor(Renderer,Color.MistyRose.r,Color.MistyRose.g,Color.MistyRose.b,Color.MistyRose.a);
+        SDL_SetRenderDrawColor(Renderer,BackgroundColor[CurrentColor].r,BackgroundColor[CurrentColor].g,BackgroundColor[CurrentColor].b,BackgroundColor[CurrentColor].a);
         SDL_RenderClear(Renderer);
-        for (int i = 0; i < 2; ++i) {
+        for (int i = 0; i < 3; ++i) {
             if (!button[i].statue){
                 Display_FillFRectByCentre(button[i].fRect.x + button[i].fRect.w / 2,
                                           button[i].fRect.y + button[i].fRect.h / 2 + h, button[i].fRect.w,
@@ -158,6 +170,7 @@ static bool Menu_StartAnimation(void) {                                //游戏�
                                      button[i].fRect.y + button[i].fRect.h / 2 + h,
                                      button[i].content, &Color.Gray, Font);
         }
+        Display_DrawTextByCentre(WINDOW_WIDTH/2,titleY+h,title,&Color.White,FontTitle);
         SDL_RenderPresent(Renderer);
         h+=speed;
         speed+=accelerate;
@@ -169,5 +182,5 @@ static bool Menu_StartAnimation(void) {                                //游戏�
 
 void Menu_Quit() {
     TTF_CloseFont(Font);
-    return;
+    TTF_CloseFont(FontTitle);
 }

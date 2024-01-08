@@ -8,7 +8,7 @@
 #include "utils/display.h"
 
 enum blockKind {
-    Blue,Green,Grey,Orange,Pink,Basic,Box,Cake,MagicCube,BlockKinds
+    Blue,Green,Grey,Orange,Pink,Basic,Basic1,Basic2,Basic3,Basic4,Box,Cake,MagicCube,BlockKinds
 };
 enum magicBlock {
     magicCube,MagicBlockKinds
@@ -19,10 +19,11 @@ enum direction {
 
 float BlockSize[BlockKinds];
 struct block BlockHead;
-static SDL_Texture *BlockTexture[BlockKinds];
+static SDL_Texture *BlockTexture[BlockKinds-MagicBlockKinds];
 static char *BlockTexturePath[]={
     "picture/blue.png","picture/green.png","picture/grey.png","picture/orange.png","picture/pink.png",
-    "picture/basic.png","picture/box.png","picture/cake.png",
+    "picture/basic.png","picture/basic1.png","picture/basic2.png","picture/basic3.png","picture/basic4.png",
+    "picture/box.png","picture/cake.png",
 };
 static SDL_Texture *ShadowTexture[2];
 static char *ShadowTexturePath[2]={
@@ -47,7 +48,7 @@ void Block_Init(void) {
         }
     }
     BlockHead.nextBlock=NULL;
-    IMG_Animation *magicCube = IMG_LoadAnimation("picture/magicCube1.gif");
+    IMG_Animation *magicCube = IMG_LoadAnimation("picture/magicCube.gif");
     for (int i = 0; i <= 5; ++i) {
         SDL_SetColorKey(*(magicCube->frames+i), SDL_TRUE, SDL_MapRGB((*(magicCube->frames+i))->format, 255, 255, 255));
         magicCubeTexture[i] = SDL_CreateTextureFromSurface(Renderer,*(magicCube->frames+i));
@@ -71,8 +72,8 @@ void Block_Create(float playerCenterX,float playerCenterY,float distance,int kin
     int tempW,tempH;
     SDL_QueryTexture(newBlock->texture,NULL,NULL,&tempW,&tempH);
     SDL_Log("%d,%d",tempW,tempH);
-    newBlock->w = (float)tempW;
-    newBlock->h = (float)tempH;
+    newBlock->w = (float)tempW * percent;
+    newBlock->h = (float)tempH * percent;
     if (direction == right) {
         newBlock->centerX = playerCenterX + distance;
     } else newBlock->centerX = playerCenterX - distance;
@@ -90,7 +91,7 @@ void Block_DrawShadow(struct block *block) {
         SDL_Texture *shadow;
         if (block->kind == Cake) {
             shadow = ShadowTexture[1];
-            Display_DrawPicture(block->centerX - (block->w / 2), block->centerY + (45 - block->w/3), block->w,
+            Display_DrawPicture(block->centerX - (block->w / 2), block->centerY+block->h/4-block->w/ 3, block->w,
                                 block->w * 2 / 3, 0, NULL, shadow);
         }
         else {
@@ -112,13 +113,13 @@ SDL_Texture *Block_QueryTexture(int kind,int index) {
 }
 
 void Block_Quit(void) {
-    for (int i = 0; i < BlockKinds; ++i) {
+    for (int i = 0; i < BlockKinds-MagicBlockKinds; ++i) {
         SDL_DestroyTexture(BlockTexture[i]);
     }
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 2; ++i) {
         SDL_DestroyTexture(ShadowTexture[i]);
     }
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 6; ++i) {
         SDL_DestroyTexture(magicCubeTexture[i]);
     }
 }

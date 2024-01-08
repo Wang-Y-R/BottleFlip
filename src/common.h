@@ -11,7 +11,8 @@
 #define WINDOW_WIDTH 1000.0 //窗口宽度
 #define WINDOW_HEIGHT 870.0 //窗口高度
 #define Fps 60 //刷新率
-#define BLOCK_KINDS 9
+#define BLOCK_KINDS 13
+#define BackgroundColorKind 4
 //全局变量
 extern SDL_Window *Window;//窗口
 extern SDL_Surface *Surface;//表面
@@ -30,6 +31,8 @@ extern struct color {
     SDL_Color MistyRose,MintCream,Gray,Cornsilk,White;
 }Color;
 
+extern int CurrentColor;
+extern SDL_Color BackgroundColor[BackgroundColorKind];
 //命名 全局变量开头大写，函数内则小写
 
 
