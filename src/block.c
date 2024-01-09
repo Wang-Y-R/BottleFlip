@@ -63,6 +63,7 @@ void Block_Init(void) {
 void Block_Create(float playerCenterX,float playerCenterY,float distance,int kind,int direction,float percent) {
     struct block *newBlock = malloc(sizeof *newBlock);
     newBlock->kind = kind;
+    newBlock->isCheck = false;
     newBlock->nextBlock = BlockHead.nextBlock;
     BlockHead.nextBlock = newBlock;
     if (kind < BlockKinds-MagicBlockKinds) {

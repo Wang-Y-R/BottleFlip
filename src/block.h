@@ -14,6 +14,7 @@ extern struct block{
     float centerX;
     float centerY;
     struct block* nextBlock;
+    bool isCheck;
 }BlockHead;
 
 void Block_Init(void);

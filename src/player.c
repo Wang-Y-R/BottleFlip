@@ -48,6 +48,10 @@ static void Player_Clear() {
     Player.color = Grey;
     Player.centerX = WINDOW_WIDTH/2;
     Player.centerY = 650;
+    Player.lives = 2;
+    Player.AI = 1;
+    Player.star =1;
+    Player.isCheat = false;
 }
 
 void Player_Draw(float percent) {

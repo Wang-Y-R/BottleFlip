@@ -62,6 +62,7 @@ bool Setting(void) {
     while (true) {
         uint64_t start = SDL_GetTicks64();//计时起点
         if(!Input_GetEvent()){//玩家是否退出，是的话直接返回main函数进行退出
+            isQuit = true;
             Setting_Quit();
             return false;
         }

@@ -22,7 +22,6 @@ static void Game_DrawBackground(void);
 
 static bool Game_BlockCreateAnimation(bool first);
 static bool Game_PlayerBornAnimation(void);
-static bool Game_TextAppearAnimation(void);
 static void Game_AddScoreAnimation(int score);
 
 static void Game_CreateNextBlock(bool first);
@@ -33,7 +32,10 @@ static bool Game_JumpAnimation(float strength);
 
 static int Game_Check(void);
 static void Game_Scroll(void);
-static bool Game_BlockEventCheck(int kind);
+static void Game_BlockEventCheck(void);
+
+static bool Game_AIMode(void);
+static bool Game_Death(void);
 
 static void Game_Quit(void);
 #endif //BOTTLEFLIP_GAME_H

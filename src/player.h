@@ -5,7 +5,7 @@
 #ifndef BOTTLEFLIP_PLAYER_H
 #define BOTTLEFLIP_PLAYER_H
 #include "SDL2/SDL.h"
-
+#include "stdbool.h"
 extern struct player{ //玩家信息
     SDL_Texture *texture;
     float x;
@@ -19,6 +19,10 @@ extern struct player{ //玩家信息
     int combo;
     int statue;
     int color;
+    int lives;
+    int AI;
+    int star;
+    bool isCheat;
 } Player;
 
 void Player_Init();

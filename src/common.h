@@ -26,9 +26,9 @@ extern struct mouse{
     bool status;//false 表示没有按下 true表示按下
     bool move;//false 表示没有移动 true移动了
 }Mouse;
-
+extern bool isQuit;
 extern struct color {
-    SDL_Color MistyRose,MintCream,Gray,Cornsilk,White;
+    SDL_Color MistyRose,MintCream,Gray,Cornsilk,White,Red;
 }Color;
 
 extern int CurrentColor;

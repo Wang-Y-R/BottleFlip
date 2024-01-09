@@ -45,6 +45,7 @@ extern Mix_Chunk *Music_start;
 bool backGame = true;
 
 static void Pause_Init(void){
+    button[CurrentButton].statue = false;
     CurrentButton = 0;
     Font = TTF_OpenFont("font/COOPBL.TTF",60);
     if (Font == NULL) {
@@ -63,6 +64,7 @@ bool Pause(void) {
     while (true) {
         uint64_t start = SDL_GetTicks64();//计时起点
         if(!Input_GetEvent()){//玩家是否退出，是的话直接返回main函数进行退出
+            isQuit = true;
             Pause_Quit();
             return false;
         }
@@ -79,7 +81,7 @@ bool Pause(void) {
         } else if (Keyboard[SDL_SCANCODE_SPACE]||Keyboard[SDL_SCANCODE_KP_ENTER]) {  //玩家按空格或回车确认
             if (!Pause_Select()) {
                 Pause_Quit();
-                if (!backGame) return false;
+                if (!backGame || isQuit) return false;
                 else return true;
             }
         } else if (Mouse.move) {                                        //玩家移动鼠标
@@ -102,7 +104,7 @@ bool Pause(void) {
             if (SDL_PointInFRect(&fPoint,&button[CurrentButton].fRect)) {
                 if (!Pause_Select()) {
                     Pause_Quit();
-                    if (!backGame) return false;
+                    if (!backGame || isQuit) return false;
                     else return true;
                 }
             }
@@ -132,13 +134,14 @@ static bool Pause_Select(void) {                                         //玩�
         case Continue:
             return false;
         case setting:
-            Setting();
-            break;
+            if(!Setting()) return false;
+            else return true;
         case AIMode:
             Player.statue = true;
+            Player.isCheat = true;
             return false;
         case BackMenu:
-            backGame = true;
+            backGame = false;
             return false;
         default:
             break;
