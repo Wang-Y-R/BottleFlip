@@ -3,11 +3,12 @@
 //
 #include "main.h"
 #include "menu.h"
-#include "game.h"
+#include "player.h"
+#include "block.h"
 #include "SDL2/SDL_mixer.h"
 #include "SDL2/SDL_image.h"
-#include "utils/input.h"
 #include "utils/display.h"
+
 #undef main
 
 SDL_Window *Window;//窗口
@@ -17,19 +18,24 @@ bool Keyboard[512];//记录键盘按键状态 0表示没有按下 1表示按下
 struct mouse Mouse;
 bool isQuit;
 struct color Color = {
-       {255, 228, 225,255},{245, 255, 250,255},
-         {119 , 136, 153, 255},{255, 248, 220,255},
-       {255,255,255,255},{255,0,0,255},
+        {255, 228, 225, 255},
+        {245, 255, 250, 255},
+        {119, 136, 153, 255},
+        {255, 248, 220, 255},
+        {255, 255, 255, 255},
+        {255, 0,   0,   255},
 };
 int CurrentColor;
 SDL_Color BackgroundColor[BackgroundColorKind] = {
-        {255, 228, 225,255},{255, 204, 255,255},{204,229,255,255},
-        {229,255,204,255},
+        {255, 228, 225, 255},
+        {255, 204, 255, 255},
+        {204, 229, 255, 255},
+        {229, 255, 204, 255},
 };
 
 Mix_Chunk *Music_buttonSelect;
 Mix_Chunk *Music_createBlock;
-Mix_Chunk *Music_heart;
+Mix_Chunk *Music_dead;
 Mix_Chunk *Music_jumping;
 Mix_Chunk *Music_rising;
 Mix_Chunk *Music_start;
@@ -45,9 +51,10 @@ Mix_Chunk *Music_music2;
 Mix_Chunk *Music_music3;
 
 void Init();
+
 void Quit();
 
-int main(int argc,char *argv[]) {
+int main(void) {
     Init();
     Menu();
     Quit();
@@ -75,7 +82,7 @@ void Init() {
         SDL_Log("%s", SDL_GetError());
     Music_buttonSelect = Mix_LoadWAV("music/buttonSelect.wav");
     Music_createBlock = Mix_LoadWAV("music/createBlock.wav");
-    Music_heart = Mix_LoadWAV("music/heart.wav");
+    Music_dead = Mix_LoadWAV("music/dead.wav");
     Music_jumping = Mix_LoadWAV("music/jumping.wav");
     Music_rising = Mix_LoadWAV("music/rising4.wav");
     Music_start = Mix_LoadWAV("music/start.wav");
@@ -89,14 +96,21 @@ void Init() {
     Music_music1 = Mix_LoadWAV("music/music1.wav");
     Music_music2 = Mix_LoadWAV("music/music2.wav");
     Music_music3 = Mix_LoadWAV("music/music3.wav");
-    CurrentColor = 0;
+    if (!(Music_dead && Music_music1 && Music_failed && Music_star && Music_robot && Music_coin && Music_buttonSelect &&
+          Music_changeColor && Music_magicCube && Music_rising && Music_jumping && Music_createBlock && Music_start &&
+          Music_music2 && Music_music3 && Music_pop)) {
+        SDL_Log("Music_Init failed: %s", TTF_GetError());
+    }
+        CurrentColor = 0;
     isQuit = false;
+    Player_Init();
+    Block_Init();
 }
 
 void Quit() {
     Mix_FreeChunk(Music_buttonSelect);
     Mix_FreeChunk(Music_createBlock);
-    Mix_FreeChunk(Music_heart);
+    Mix_FreeChunk(Music_dead);
     Mix_FreeChunk(Music_jumping);
     Mix_FreeChunk(Music_rising);
     Mix_FreeChunk(Music_start);
@@ -114,4 +128,6 @@ void Quit() {
     SDL_DestroyWindow(Window);
     SDL_DestroyRenderer(Renderer);
     SDL_DestroyWindowSurface(Window);
+    Player_Quit();
+    Block_Quit();
 }

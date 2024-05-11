@@ -22,6 +22,8 @@ extern struct player{ //玩家信息
     int lives;
     int AI;
     int star;
+    int pb;
+    int direction;
     bool isCheat;
 } Player;
 
@@ -31,7 +33,7 @@ void Player_Draw(float percent);
 
 void Player_ChangeTexture(int kind);
 
-static void Player_Clear();
+void Player_Clear();
 
 void Player_Quit();
 

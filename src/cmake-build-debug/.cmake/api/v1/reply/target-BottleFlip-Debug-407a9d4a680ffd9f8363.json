@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "D:/codes/BottleFlip/bin/BottleFlip.exe"
+			"path" : "D:/codes/C/BottleFlip/bin/BottleFlip.exe"
 		},
 		{
-			"path" : "D:/codes/BottleFlip/bin/BottleFlip.pdb"
+			"path" : "D:/codes/C/BottleFlip/bin/BottleFlip.pdb"
 		}
 	],
 	"backtrace" : 1,

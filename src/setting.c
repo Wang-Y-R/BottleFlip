@@ -16,7 +16,7 @@
 #define  Button_Height 70.0
 //按钮类型
 enum Select{
-    Back,ChangeBackgroundColor
+    Back,ChangeBackgroundColor,ClearPB,
 };
 //按钮相关内容
 typedef struct {
@@ -27,12 +27,15 @@ typedef struct {
 }Button;
 static int CurrentButton=0;//当前选择按钮
 //预设的按钮
-static Button button[2]={
+static Button button[3]={
         false, WINDOW_WIDTH/2-Button_Width/2,WINDOW_HEIGHT/2-Button_Height,
         Button_Width,Button_Height,"Back",&Color.MintCream,
 
         false,WINDOW_WIDTH/2-Button_Width/2,WINDOW_HEIGHT/2+Button_Height,
         Button_Width,Button_Height,"Background",&Color.MintCream,
+
+        false,WINDOW_WIDTH/2-Button_Width/2,WINDOW_HEIGHT/2+Button_Height,
+        Button_Width,Button_Height,"Clear PB",&Color.MintCream,
 };
 //预设字体
 static TTF_Font *Font;
@@ -47,7 +50,7 @@ static void Setting_Init(void){
     if (Font == NULL) {
         SDL_Log("SDL_Pause_Init_LoadFont failed: %s", SDL_GetError());
     }
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 3; ++i) {
         button[i].fRect.x = WINDOW_WIDTH/2-Button_Width/2;
         button[i].fRect.y = WINDOW_HEIGHT/2-Button_Height + i * 2 * Button_Height;
     }
@@ -68,12 +71,12 @@ bool Setting(void) {
         }
         if (Keyboard[SDL_SCANCODE_DOWN] || Keyboard[SDL_SCANCODE_S]) { //玩家向下选择
             button[CurrentButton].statue = false;
-            CurrentButton = (CurrentButton+1) % 2;
+            CurrentButton = (CurrentButton+1) % 3;
             button[CurrentButton].statue = true;
             Mix_PlayChannel(-1,Music_buttonSelect,0);
         } else if (Keyboard[SDL_SCANCODE_UP]||Keyboard[SDL_SCANCODE_W]) { //向上选择
             button[CurrentButton].statue = false;
-            CurrentButton = (CurrentButton+2-1) % 2;
+            CurrentButton = (CurrentButton+3-1) % 3;
             button[CurrentButton].statue = true;
             Mix_PlayChannel(-1,Music_buttonSelect,0);
         } else if (Keyboard[SDL_SCANCODE_SPACE]||Keyboard[SDL_SCANCODE_KP_ENTER]) {  //玩家按空格或回车确认
@@ -82,7 +85,7 @@ bool Setting(void) {
             }
         } else if (Mouse.move) {                                        //玩家移动鼠标
             SDL_FPoint fPoint= {Mouse.x,Mouse.y};
-            for (int i = 0; i < 2; ++i) {
+            for (int i = 0; i < 3; ++i) {
                 if (SDL_PointInFRect(&fPoint,&button[i].fRect)) {
                     if (CurrentButton != i ) {
                         button[CurrentButton].statue = false;
@@ -113,13 +116,15 @@ bool Setting(void) {
 static void Setting_Draw(void){                                            //绘制菜单界面
     SDL_SetRenderDrawColor(Renderer,BackgroundColor[CurrentColor].r,BackgroundColor[CurrentColor].g,BackgroundColor[CurrentColor].b,BackgroundColor[CurrentColor].a);
     SDL_RenderClear(Renderer);
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 3; ++i) {
         if (!button[i].statue){
             Display_FillFRect(&button[i].fRect, button[i].color);
         } else Display_FillFRect(&button[i].fRect, &Color.Cornsilk);
         Display_DrawTextByCentre(button[i].fRect.x + button[i].fRect.w / 2, button[i].fRect.y + button[i].fRect.h / 2,
                                  button[i].content, &Color.Gray, Font);
     }
+    char PersonalBest[15]= {"PB :"},number[10];
+    Display_DrawTextByCentre(WINDOW_WIDTH/2,150, strcat(PersonalBest, itoa(Player.pb,number,10)),&Color.White,Font);
     SDL_RenderPresent(Renderer);
 }
 
@@ -129,6 +134,9 @@ static bool Setting_Select(void) {                                         //玩
             CurrentColor = (CurrentColor + 1) % BackgroundColorKind;
             break;
         case Back:
+            return false;
+        case ClearPB:
+            Player.pb = 0;
             return false;
         default:
             break;

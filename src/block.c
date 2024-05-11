@@ -3,15 +3,16 @@
 //
 
 #include "block.h"
+#include <stdio.h>
 #include "player.h"
 #include "SDL2/SDL_image.h"
 #include "utils/display.h"
 
 enum blockKind {
-    Blue,Green,Grey,Orange,Pink,Basic,Basic1,Basic2,Basic3,Basic4,Basic5,Basic6,Box,Cake,Life,Luck,Music,MagicCube,BlockKinds
+   Grey=2,Basic=5,Cake=13,Life,Luck,Music,MagicCube,BlockKinds
 };
 enum magicBlock {
-    magicCube,MagicBlockKinds
+    /*magicCube,*/ MagicBlockKinds=1
 };
 enum direction {
     right,left
@@ -33,7 +34,7 @@ static char *ShadowTexturePath[2]={
 SDL_Texture *magicCubeTexture[6];
 
 void Block_Init(void) {
-    for (int i = 0; i < BlockKinds-MagicBlockKinds; ++i) {
+    for (int i = 0; i < BlockKinds - MagicBlockKinds; ++i) {
         BlockTexture[i] = IMG_LoadTexture(Renderer,BlockTexturePath[i]);
         if (BlockTexture[i] == NULL) {
             SDL_Log("Block_Init_Texture NO.%d failed: %s",i, SDL_GetError());
@@ -48,7 +49,6 @@ void Block_Init(void) {
             SDL_Log("Block_Init_Texture_Shadow failed: %s",SDL_GetError());
         }
     }
-    BlockHead.nextBlock=NULL;
     IMG_Animation *magicCube = IMG_LoadAnimation("picture/magicCube.gif");
     for (int i = 0; i <= 5; ++i) {
         SDL_SetColorKey(*(magicCube->frames+i), SDL_TRUE, SDL_MapRGB((*(magicCube->frames+i))->format, 255, 255, 255));
@@ -58,6 +58,39 @@ void Block_Init(void) {
     SDL_QueryTexture(magicCubeTexture[0],NULL,NULL,&tempW,&tempH);
     BlockSize[MagicCube] = (float)tempW;
     IMG_FreeAnimation(magicCube);
+
+    FILE *fp = NULL;
+    fp = fopen("block.dat", "rb");
+    if (fp == NULL) {
+        printf("Save data failed: cannot open block.dat\n");
+        return;
+    }
+    int count;
+    fread(&count,sizeof count,1,fp);
+    struct block *cur = &BlockHead;
+    for (int i = 0; i < count; ++i) {
+        struct block *new = malloc(sizeof *new);
+        fread(new,sizeof *new,1,fp);
+        if (new->kind < BlockKinds-MagicBlockKinds) {
+            new->texture = BlockTexture[new->kind];
+        } else if (new->kind == MagicCube) {
+            new->texture = magicCubeTexture[1];
+        }
+        cur ->nextBlock = new;
+        cur = new;
+    }
+    cur->nextBlock = NULL;
+    fclose(fp);
+}
+
+void Block_Clear(void) {
+    struct block *cur = BlockHead.nextBlock;
+    while (cur != NULL) {
+        struct block *now = cur;
+        cur = cur->nextBlock;
+        free(now);
+    }
+    BlockHead.nextBlock = NULL;
 }
 
 void Block_Create(float playerCenterX,float playerCenterY,float distance,int kind,int direction,float percent) {
@@ -73,7 +106,6 @@ void Block_Create(float playerCenterX,float playerCenterY,float distance,int kin
     }
     int tempW,tempH;
     SDL_QueryTexture(newBlock->texture,NULL,NULL,&tempW,&tempH);
-    SDL_Log("%d,%d",tempW,tempH);
     newBlock->w = (float)tempW * percent;
     newBlock->h = (float)tempH * percent;
     if (direction == right) {
@@ -124,6 +156,25 @@ void Block_Quit(void) {
     for (int i = 0; i < 6; ++i) {
         SDL_DestroyTexture(magicCubeTexture[i]);
     }
+    FILE *fp = NULL;
+    fp = fopen("block.dat", "wb");
+    if (fp == NULL) {
+        printf("Save data failed: cannot open block.dat\n");
+        return;
+    }
+    struct block *cur = BlockHead.nextBlock;
+    int count = 0;
+    while (cur != NULL) {
+        count++;
+        cur =cur->nextBlock;
+    }
+    fwrite(&count,sizeof count,1,fp);
+    cur = BlockHead.nextBlock;
+    while (cur != NULL) {
+        fwrite(cur,sizeof *cur,1,fp);
+        cur =cur->nextBlock;
+    }
+    fclose(fp);
 }
 
 void Block_Destroy(struct block * uselessBlock) {

@@ -126,6 +126,8 @@ static void Pause_Draw(void){                                            //ç»˜åˆ
         Display_DrawTextByCentre(button[i].fRect.x + button[i].fRect.w / 2, button[i].fRect.y + button[i].fRect.h / 2,
                                  button[i].content, &Color.Gray, Font);
     }
+    char PersonalBest[15]= {"PB :"},number[10];
+    Display_DrawTextByCentre(WINDOW_WIDTH/2,150, strcat(PersonalBest, itoa(Player.pb,number,10)),&Color.White,Font);
     SDL_RenderPresent(Renderer);
 }
 

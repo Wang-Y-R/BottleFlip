@@ -8,46 +8,31 @@
 #include "pause.h"
 #include <string.h>
 #include <time.h>
-#include <stdio.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_image.h>
 #include "utils/display.h"
 #include "utils/input.h"
 
 enum blockKind {
-    Blue,Green,Grey,Orange,Pink,Basic,Basic1,Basic2,Basic3,Basic4,Basic5,Basic6,Box,Cake,Life,Luck,Music,MagicCube,BlockKinds
+    /*Blue, Green,*/Grey = 2,/*Orange,Pink,*/Basic = 5,/*Basic1,Basic2,Basic3,Basic4,Basic5,Basic6,Box,*/Cake = 13,Life,Luck,
+    Music,MagicCube,BlockKinds
 };
 enum magicBlock {
-    magicCube, MagicBlockKinds
+    /*magicCube,*/ MagicBlockKinds=1
 };
 enum direction {
     right, left
 } Direction;
 
-static TTF_Font *ScoreFont, *ComboFont,*CheatFont;
 static int Distance, Kind;
-static SDL_Texture *StrengthOuter; //血条外壳
+static TTF_Font *ScoreFont, *ComboFont, *CheatFont;
 extern float BlockSize[BLOCK_KINDS];
-extern Mix_Chunk *Music_createBlock;
-extern Mix_Chunk *Music_heart;
-extern Mix_Chunk *Music_jumping;
-extern Mix_Chunk *Music_rising;
-extern Mix_Chunk *Music_pop;
-extern Mix_Chunk *Music_magicCube;
-extern Mix_Chunk *Music_changeColor;
-extern Mix_Chunk *Music_buttonSelect;
-extern Mix_Chunk *Music_coin;
-extern Mix_Chunk *Music_robot;
-extern Mix_Chunk *Music_star;
-extern Mix_Chunk *Music_start;
-extern Mix_Chunk *Music_failed;
-extern Mix_Chunk *Music_music1;
-extern Mix_Chunk *Music_music2;
-extern Mix_Chunk *Music_music3;
-
-static SDL_Texture *heart,*starIn,*starOut,*star,*robot,*robotIn,*robotOut,*coin,*gearOut,*gearIn,*gear,*loveMusic;//图片
-static SDL_FRect heartFRect = {WINDOW_WIDTH/2+WINDOW_WIDTH/8, 40, 70, 70},gearFRect = {WINDOW_WIDTH - 110, 10, 100, 100},//对应的位置
-          robotFRect = {WINDOW_WIDTH-110,120,70,70},starFRect = {WINDOW_WIDTH-110,200,70,70};
+extern Mix_Chunk *Music_createBlock, *Music_dead, *Music_jumping, *Music_rising, *Music_pop, *Music_magicCube, *Music_changeColor,
+        *Music_buttonSelect, *Music_coin, *Music_robot, *Music_star, *Music_start, *Music_failed, *Music_music1, *Music_music2, *Music_music3;
+static SDL_Texture *StrengthOuter, *heart, *starIn, *starOut, *star, *robot, *robotIn, *robotOut, *coin, *gearOut, *gearIn, *gear, *loveMusic;//图片
+static SDL_FRect heartFRect = {WINDOW_WIDTH / 2 + WINDOW_WIDTH / 8, 40, 70, 70}, gearFRect = {WINDOW_WIDTH - 110, 10,
+                                                                                              100, 100},//对应的位置
+robotFRect = {WINDOW_WIDTH - 110, 120, 70, 70}, starFRect = {WINDOW_WIDTH - 110, 200, 70, 70};
 
 uint64_t checkTime;
 
@@ -56,68 +41,68 @@ bool Game() {
     //初始化
     Game_Init();
     //加载初始的方块和动画
-    Game_CreateNextBlock(true);
-    if (!Game_BlockCreateAnimation(true) || !Game_PlayerBornAnimation()) {
-        Game_Quit();
-        return false;
-    }
-    SDL_Delay(100);
-    Game_CreateNextBlock(false);
-    if (!Game_BlockCreateAnimation(false)) {
-        Game_Quit();
-        return false;
+    if (BlockHead.nextBlock == NULL) {
+        Game_CreateNextBlock(true);
+        if (!Game_BlockCreateAnimation(true) || !Game_PlayerBornAnimation()) {
+            Game_Quit();
+            return false;
+        }
+        SDL_Delay(100);
+        Game_CreateNextBlock(false);
+        if (!Game_BlockCreateAnimation(false)) {
+            Game_Quit();
+            return false;
+        }
     }
     //开始游戏
     while (true) {
         uint64_t start = SDL_GetTicks64();//计时开始
-        if (!Input_GetEvent()) {
+        if (!Input_GetEvent()) {          //获取事件，并检测是否直接退出
             Game_Quit();
             return false;
         }
         if (Mouse.move) { //移动鼠标，检测是不是使用道具或者暂停
-            SDL_FPoint fPoint= {Mouse.x,Mouse.y};
-            if (SDL_PointInFRect(&fPoint,&gearFRect)) {
+            SDL_FPoint fPoint = {Mouse.x, Mouse.y};
+            if (SDL_PointInFRect(&fPoint, &gearFRect)) {
                 if (gear != gearIn) {
                     gear = gearIn;
-                    Mix_PlayChannel(-1,Music_buttonSelect,0);
+                    Mix_PlayChannel(-1, Music_buttonSelect, 0);
                 }
-            } else if (SDL_PointInFRect(&fPoint,&robotFRect)) {
+            } else if (SDL_PointInFRect(&fPoint, &robotFRect)) {
                 if (robot != robotIn) {
                     robot = robotIn;
-                    Mix_PlayChannel(-1,Music_buttonSelect,0);
+                    Mix_PlayChannel(-1, Music_buttonSelect, 0);
                 }
-            } else if (SDL_PointInFRect(&fPoint,&starFRect)) {
+            } else if (SDL_PointInFRect(&fPoint, &starFRect)) {
                 if (star != starIn) {
                     star = starIn;
-                    Mix_PlayChannel(-1,Music_buttonSelect,0);
+                    Mix_PlayChannel(-1, Music_buttonSelect, 0);
                 }
-            }
-            else {
+            } else {
                 gear = gearOut;
                 robot = robotOut;
                 star = starOut;
             }
         }
-        if (Mouse.status) {
-            SDL_FPoint fPoint= {Mouse.x,Mouse.y};
-            if (SDL_PointInFRect(&fPoint,&gearFRect)) {
+        if (Mouse.status) { //检测是否点击了鼠标，以及鼠标的位置
+            SDL_FPoint fPoint = {Mouse.x, Mouse.y};
+            if (SDL_PointInFRect(&fPoint, &gearFRect)) {
                 gear = gearOut;
                 if (!Pause()) {
                     if (isQuit) {
-                        SDL_Log("!");
                         Game_Quit();
                         return false;
-                    }else return true;
+                    } else return true;
                 }
-            } else if (SDL_PointInFRect(&fPoint,&robotFRect) && Player.AI > 0) {
+            } else if (SDL_PointInFRect(&fPoint, &robotFRect) && Player.AI > 0) {
                 Player.statue = true;
                 Player.AI--;
-                if (!Game_AIMode()){
+                if (!Game_AIMode()) {
                     Game_Quit();
                     return false;
                 }
                 Player.statue = false;
-            } else if (SDL_PointInFRect(&fPoint,&starFRect) && Player.star > 0) {
+            } else if (SDL_PointInFRect(&fPoint, &starFRect) && Player.star > 0) {
                 Player.star--;
                 struct block *temp = BlockHead.nextBlock;
                 BlockHead.nextBlock = temp->nextBlock;
@@ -129,6 +114,7 @@ bool Game() {
                 }
             }
         } else if (Keyboard[SDL_SCANCODE_SPACE] == true) {//蓄力开跳
+            BlockHead.nextBlock->nextBlock->isCheck = true; //不管跳完之后还在不在这个方块上，都认为这方块检查完了
             if (!Game_Jump()) {
                 Game_Quit();
                 return false;
@@ -145,7 +131,6 @@ bool Game() {
                     }
                     break;
                 case -1://没有跳到下一个方块，返回主菜单
-                    SDL_Log("!");
                     Game_Quit();
                     return true;
             }
@@ -154,7 +139,7 @@ bool Game() {
                 if (isQuit) {
                     Game_Quit();
                     return false;
-                }else return true;
+                } else return true;
             }
             Game_DrawAll();
             SDL_RenderPresent(Renderer);
@@ -171,6 +156,7 @@ bool Game() {
             uint64_t end = SDL_GetTicks64();                                //计时终点
             SDL_Delay((end - start) < (1000 / Fps) ? 1000 / Fps : 0);
         }
+        if (Player.pb < Player.score && !Player.isCheat) Player.pb = Player.score;
     }
 }
 
@@ -224,28 +210,31 @@ static void Game_DrawText(void) {
         char *ai = "AI Mode,press Q to quit";
         Display_DrawTextByCentre(WINDOW_WIDTH / 2, WINDOW_HEIGHT - 100, ai, &Color.White, ScoreFont);
     }
+    Display_DrawPicture(gearFRect.x, gearFRect.y, gearFRect.w, gearFRect.h, 0, NULL, gear);
+    for (int i = 0; i < Player.lives; ++i) {
+        Display_DrawPicture(heartFRect.x + (float) i * 80, heartFRect.y, heartFRect.w, heartFRect.h, 0, NULL, heart);
+    }
+    char robotText[5] = {"x\0"}, starText[5] = {"x\0"};
+    Display_DrawPicture(robotFRect.x, robotFRect.y, robotFRect.w, robotFRect.h, 0, NULL, robot);
+    strcat(robotText, itoa(Player.AI, number, 10));
+    Display_DrawText(robotFRect.x + robotFRect.w, robotFRect.y + robotFRect.h / 2, robotText, 40, 40, &Color.White,
+                     ScoreFont);
+    Display_DrawPicture(starFRect.x, starFRect.y, starFRect.w, starFRect.h, 0, NULL, star);
+    strcat(starText, itoa(Player.star, number, 10));
+    Display_DrawText(starFRect.x + starFRect.w, starFRect.y + starFRect.h / 2, starText, 40, 40, &Color.White,
+                     ScoreFont);
+    //是否作弊了
+    if (Player.isCheat) {
+        char *cheat = {"*This score doesn't count towards the PB*\0"};
+        Display_DrawTextByCentre(WINDOW_WIDTH / 2, 175, cheat, &Color.Red, CheatFont);
+    }
 }
 
 static void Game_DrawBackground(void) {
     SDL_SetRenderDrawColor(Renderer, BackgroundColor[CurrentColor].r, BackgroundColor[CurrentColor].g,
                            BackgroundColor[CurrentColor].b, BackgroundColor[CurrentColor].a);
     SDL_RenderClear(Renderer);
-    Display_DrawPicture(gearFRect.x,gearFRect.y,gearFRect.w,gearFRect.h,0,NULL,gear);
-    for (int i = 0; i < Player.lives; ++i) {
-        Display_DrawPicture(heartFRect.x + (float)i * 80, heartFRect.y, heartFRect.w, heartFRect.h, 0, NULL, heart);
-    }
-    char robotText[5]={"x\0"},number[4]={"\0"},starText[5]={"x\0"};
-    Display_DrawPicture(robotFRect.x,robotFRect.y,robotFRect.w,robotFRect.h,0,NULL,robot);
-    strcat(robotText, itoa(Player.AI, number, 10));
-    Display_DrawText(robotFRect.x+robotFRect.w,robotFRect.y+robotFRect.h/2, robotText, 40, 40, &Color.White, ScoreFont);
-    Display_DrawPicture(starFRect.x,starFRect.y,starFRect.w,starFRect.h,0,NULL,star);
-    strcat(starText, itoa(Player.star, number, 10));
-    Display_DrawText(starFRect.x+starFRect.w,starFRect.y+starFRect.h/2,starText,40,40,&Color.White,ScoreFont);
-    //是否作弊了
-    if (Player.isCheat) {
-        char *cheat = {"* The score will not be recorded *\0"};
-        Display_DrawTextByCentre(WINDOW_WIDTH/2,175,cheat,&Color.Red,CheatFont);
-    }
+
 }
 
 static void Game_DrawBlockAndBackground(struct block *blockLink) {
@@ -254,6 +243,21 @@ static void Game_DrawBlockAndBackground(struct block *blockLink) {
     while (cur != NULL) {
         Block_Draw(cur, 1);
         cur = cur->nextBlock;
+    }
+}
+
+static void Game_DrawDeath(void) { //根据遮挡关系依次渲染
+    if ((Direction == right && Player.centerX < BlockHead.nextBlock->centerX) ||
+        (Direction == left && Player.centerX > BlockHead.nextBlock->centerX)) {
+        Game_DrawBlockAndBackground(BlockHead.nextBlock);
+        Player_Draw(1);
+        Block_Draw(BlockHead.nextBlock->nextBlock, 1);
+        Game_DrawText();
+    } else {
+        Game_DrawBlockAndBackground(BlockHead.nextBlock->nextBlock);
+        Player_Draw(1);
+        Block_Draw(BlockHead.nextBlock, 1);
+        Game_DrawText();
     }
 }
 
@@ -328,8 +332,9 @@ static void Game_CreateNextBlock(bool first) {
     }
     float percent;
     do {
-        Kind = Life;//rand() % BLOCK_KINDS;
+        Kind = rand() % BLOCK_KINDS;
         Direction = rand() % 2;
+        Player.direction = Direction;
         Distance = rand() % (int) MaxStrength;
         Distance = Distance - Distance % GridSize;
         percent = (float) (120 - (float) (rand() % 30) - Player.score / 20.0) / 100;
@@ -337,7 +342,6 @@ static void Game_CreateNextBlock(bool first) {
     } while ((float) Distance < BlockHead.nextBlock->w * percent ||
              (Direction == left && ((float) Distance + BlockSize[Kind] * percent) >= Player.centerX) ||
              (Direction == right && ((float) Distance + Player.centerX + BlockSize[Kind] * percent) > WINDOW_WIDTH));
-    SDL_Log("kind = %d", Kind);
     Block_Create(Player.centerX, Player.centerY, (float) Distance, Kind, Direction, percent);
 }
 
@@ -349,6 +353,7 @@ static bool Game_Jump(void) {
 }
 
 static bool Game_GatherStrength(void) {
+    Distance = (int) SDL_fabsf(BlockHead.nextBlock->centerX - Player.centerX);
     float strength = 0, speed = 5, playerXDistance =
             Player.centerX - BlockHead.nextBlock->nextBlock->centerX, playerYDistance =
             Player.centerY - BlockHead.nextBlock->nextBlock->centerY;
@@ -428,7 +433,7 @@ static bool Game_JumpAnimation(float strength) {
 }
 
 static void Game_AddScoreAnimation(int score) {
-    int waitTime = 100/score+1;
+    int waitTime = 100 / score + 1;
     while (score > 0) {
         Input_GetEvent();
         if (Keyboard[SDL_SCANCODE_SPACE] || Mouse.status) {
@@ -436,15 +441,12 @@ static void Game_AddScoreAnimation(int score) {
             return;
         }
         Player.score++;
-        Game_DrawBlockAndBackground(BlockHead.nextBlock);
-        Player_Draw(1);
-        char Score[20] = {"Score:"}, Combo[10] = {"Combo:"}, number[10] = {'\0'}, temp[] = {" +"};
+        Game_DrawAll();
+        char Score[20] = {"Score:"}, number[10] = {'\0'}, temp[] = {" +"};
         strcat(Score, itoa(Player.score, number, 10));
         strcat(Score, temp);
         strcat(Score, itoa(score, number, 10));
-        strcat(Combo, itoa(Player.combo, number, 10));
         Display_DrawText(0, 0, Score, 0, 0, &Color.White, ScoreFont);
-        Display_DrawText(0, 70, Combo, 0, 0, &Color.White, ComboFont);
         score--;
         if (Player.statue == true) {
             char *ai = "AI Mode,press Q to quit";
@@ -458,7 +460,7 @@ static void Game_AddScoreAnimation(int score) {
 static int Game_Check(void) {
     if (SDL_fabsf(Player.centerX - BlockHead.nextBlock->centerX) <= (BlockHead.nextBlock->w / 4)) { //到了下一个
         if (SDL_fabsf(Player.centerX - BlockHead.nextBlock->centerX) <= 5) { //踩到正中心
-            Mix_PlayChannel(-1,Music_start,0);//这里懒得再找了，感觉开始这个音乐也还不错，就复用了
+            Mix_PlayChannel(-1, Music_start, 0);//这里懒得再找了，感觉开始这个音乐也还不错，就复用了
             Player.combo++;
         } else Player.combo = 0;
         //计算分数动画：
@@ -509,8 +511,9 @@ void Game_BlockEventCheck(void) {
     BlockHead.nextBlock->nextBlock->isCheck = true;
     if (kind < 5) {
         if (kind == Player.color) {
-            Mix_PlayChannel(-1,Music_coin,0);
+            Mix_PlayChannel(-1, Music_coin, 0);
             Game_AddScoreAnimation(5);
+            return;
         }
         for (int i = 0; i < 5; ++i) {
             if (i % 2) {
@@ -535,10 +538,10 @@ void Game_BlockEventCheck(void) {
         }
         Game_AddScoreAnimation(10);
     } else if (kind == Luck) {
-        switch (rand()%3) {
+        switch (rand() % 3) {
             case 0:
                 if (Player.AI < 9) {
-                    Mix_PlayChannel(-1,Music_robot,0);
+                    Mix_PlayChannel(-1, Music_robot, 0);
                     Player.AI++;
                     Game_DrawAll();
                     Display_DrawPictureByCentre(Player.centerX, Player.centerY - Player.h * 2, 70, 70, 0, NULL, robot);
@@ -548,7 +551,7 @@ void Game_BlockEventCheck(void) {
                 }
             case 1:
                 if (Player.star < 9) {
-                    Mix_PlayChannel(-1,Music_star,0);
+                    Mix_PlayChannel(-1, Music_star, 0);
                     Player.star++;
                     Game_DrawAll();
                     Display_DrawPictureByCentre(Player.centerX, Player.centerY - Player.h * 2, 70, 70, 0, NULL, star);
@@ -557,35 +560,36 @@ void Game_BlockEventCheck(void) {
                     break;
                 }
             case 2:
-                Mix_PlayChannel(-1,Music_coin,0);
+                Mix_PlayChannel(-1, Music_coin, 0);
                 Game_DrawAll();
-                Display_DrawPictureByCentre(Player.centerX,Player.centerY-Player.h*2,70,70,0,NULL,coin);
+                Display_DrawPictureByCentre(Player.centerX, Player.centerY - Player.h * 2, 70, 70, 0, NULL, coin);
                 SDL_RenderPresent(Renderer);
                 SDL_Delay(300);
                 Game_AddScoreAnimation(20);
                 break;
         }
     } else if (kind == Music) {
-        switch (rand()%3) {
+        switch (rand() % 3) {
             case 0:
-                Mix_PlayChannel(-1,Music_music1,0);
+                Mix_PlayChannel(-1, Music_music1, 0);
                 break;
             case 1:
-                Mix_PlayChannel(-1,Music_music2,0);
+                Mix_PlayChannel(-1, Music_music2, 0);
                 break;
-            case 2:Mix_PlayChannel(-1,Music_music3,0);
+            case 2:
+                Mix_PlayChannel(-1, Music_music3, 0);
                 break;
         }
         Game_DrawAll();
-        Display_DrawPictureByCentre(Player.centerX,Player.centerY-Player.h*2,150,150,0,NULL,loveMusic);
+        Display_DrawPictureByCentre(Player.centerX, Player.centerY - Player.h * 2, 150, 150, 0, NULL, loveMusic);
         SDL_RenderPresent(Renderer);
         SDL_Delay(300);
         Game_AddScoreAnimation(15);
     } else if (kind == Life) {
-        Mix_PlayChannel(-1,Music_star,0);
-        if(Player.lives <3) Player.lives++;
+        Mix_PlayChannel(-1, Music_star, 0);
+        if (Player.lives < 3) Player.lives++;
         Game_DrawAll();
-        Display_DrawPictureByCentre(Player.centerX,Player.centerY-Player.h*2,75,75,0,NULL,heart);
+        Display_DrawPictureByCentre(Player.centerX, Player.centerY - Player.h * 2, 75, 75, 0, NULL, heart);
         SDL_RenderPresent(Renderer);
         SDL_Delay(300);
     }
@@ -593,24 +597,15 @@ void Game_BlockEventCheck(void) {
 }
 
 static bool Game_Death(void) {
-    for (int i = 0;(float)i <BlockHead.nextBlock->h - BlockHead.nextBlock->w * 2 / 3 ;i++ ) {
+    for (int i = 0; (float) i < BlockHead.nextBlock->h - BlockHead.nextBlock->w * 2 / 3; i++) {
         Player.centerY++;
-        if ( (Direction == right && Player.centerX < BlockHead.nextBlock->centerX) ||(Direction==left && Player.centerX > BlockHead.nextBlock->centerX)) {
-            Game_DrawBlockAndBackground(BlockHead.nextBlock);
-            Player_Draw(1);
-            Game_DrawText();
-        } else {
-            Game_DrawBlockAndBackground(BlockHead.nextBlock->nextBlock);
-            Player_Draw(1);
-            Block_Draw(BlockHead.nextBlock,1);
-            Game_DrawText();
-        }
+        Game_DrawDeath();
         SDL_Delay(2);
         SDL_RenderPresent(Renderer);
     }
     SDL_Delay(200);
     Player.lives--;
-    if (Player.lives > 0) {
+    if (Player.lives > 0) {    //没死,复位玩家,播放音乐
         Mix_PlayChannel(-1, Music_failed, 0);
         Player.centerX = BlockHead.nextBlock->nextBlock->centerX;
         Player.centerY = BlockHead.nextBlock->nextBlock->centerY;
@@ -626,36 +621,46 @@ static bool Game_Death(void) {
         }
         return true;
     } else {
-        Mix_PlayChannel(-1, Music_heart, 0);
-        printf("GG\n");
+        Game_DrawDeath();
+        Mix_PlayChannel(-1, Music_dead, 0);
+        char content[30] = {"You died! Your score is :"}, number[10], *back = {"Press space to back to the menu"};
+        Display_DrawTextByCentre(WINDOW_WIDTH / 2, 450, strcat(content, itoa(Player.score, number, 10)), &Color.White,
+                                 ScoreFont);
+        Display_DrawTextByCentre(WINDOW_WIDTH / 2, 500, back, &Color.White, CheatFont);
+        SDL_RenderPresent(Renderer);
+        while (true) {
+            if (!Input_GetEvent() || Keyboard[SDL_SCANCODE_SPACE]) {
+                break;
+            }
+        }
+        Block_Clear();
         return false;
     }
 }
 
 
 static void Game_Init() {
-    Block_Init();
-    Player_Init();
-    ScoreFont = TTF_OpenFont("font/COOPBL.TTF", 70);
-    ComboFont = TTF_OpenFont("font/COOPBL.TTF", 70);
+    ScoreFont = TTF_OpenFont("font/COOPBL.TTF", 60);
+    ComboFont = TTF_OpenFont("font/COOPBL.TTF", 60);
     CheatFont = TTF_OpenFont("font/COOPBL.TTF", 35);
-    if (ScoreFont == NULL || ComboFont == NULL || CheatFont) {
-        SDL_Log("SDL_Menu_Init_LoadFont failed: %s", SDL_GetError());
+    if (ScoreFont == NULL || ComboFont == NULL || CheatFont == NULL) {
+        SDL_Log("SDL_Game_Init_LoadFont failed: %s", SDL_GetError());
     }
     StrengthOuter = IMG_LoadTexture(Renderer, "picture/StrengthOuter.png");
     heart = IMG_LoadTexture(Renderer, "picture/heart.png");
-    starIn = IMG_LoadTexture(Renderer,"picture/starIn.png");
-    starOut = IMG_LoadTexture(Renderer,"picture/starOut.png");
-    robotIn = IMG_LoadTexture(Renderer,"picture/robotIn.png");
-    robotOut = IMG_LoadTexture(Renderer,"picture/robotOut.png");
-    coin = IMG_LoadTexture(Renderer,"picture/coin.png");
+    starIn = IMG_LoadTexture(Renderer, "picture/starIn.png");
+    starOut = IMG_LoadTexture(Renderer, "picture/starOut.png");
+    robotIn = IMG_LoadTexture(Renderer, "picture/robotIn.png");
+    robotOut = IMG_LoadTexture(Renderer, "picture/robotOut.png");
+    coin = IMG_LoadTexture(Renderer, "picture/coin.png");
     gearOut = IMG_LoadTexture(Renderer, "picture/gearOut.png");
     gearIn = IMG_LoadTexture(Renderer, "picture/gearIn.png");
-    loveMusic = IMG_LoadTexture(Renderer,"picture/loveMusic.png");
+    loveMusic = IMG_LoadTexture(Renderer, "picture/loveMusic.png");
     srand(time(NULL));
     gear = gearOut;
     robot = robotOut;
     star = starOut;
+    Direction = Player.direction;
 }
 
 static void Game_Quit() {
@@ -672,6 +677,4 @@ static void Game_Quit() {
     SDL_DestroyTexture(gearOut);
     SDL_DestroyTexture(gearIn);
     SDL_DestroyTexture(loveMusic);
-    Player_Quit();
-    Block_Quit();
 }

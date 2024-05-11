@@ -19,6 +19,7 @@ static void Game_DrawAll(void);
 static void Game_DrawText(void);
 static void Game_DrawBlockAndBackground(struct block *blockLink);
 static void Game_DrawBackground(void);
+static void Game_DrawDeath(void);
 
 static bool Game_BlockCreateAnimation(bool first);
 static bool Game_PlayerBornAnimation(void);

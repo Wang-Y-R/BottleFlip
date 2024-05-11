@@ -19,6 +19,8 @@ extern struct block{
 
 void Block_Init(void);
 
+void Block_Clear(void);
+
 void Block_Create(float playerCenterX,float playerCenterY,float distance,int kind,int direction,float percent);
 
 void Block_Draw(struct block *block,float percent);

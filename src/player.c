@@ -3,6 +3,7 @@
 //
 
 #include "player.h"
+#include <stdio.h>
 #include "common.h"
 #include "utils/display.h"
 #include "SDL2/SDL_image.h"
@@ -11,10 +12,10 @@ struct player Player;
 
 
 enum PlayerColor {
-    Blue,Green,Grey,Orange,Pink,PlayerColorKinds
+    /*Blue,Green,*/Grey=2,/*Orange,Pink,*/PlayerColorKinds=5
 };
 enum PlayerStatue {
-    Normal,AI
+    Normal,/*AI*/
 };
 
 static SDL_Texture *PlayerTexture[PlayerColorKinds];
@@ -33,15 +34,23 @@ void Player_Init() {
             SDL_Log("Player_Init_Texture failed : %s",SDL_GetError());
         }
     }
-    Player.texture = PlayerTexture[Grey];
+    FILE *fp = NULL;
+    fp = fopen("player.dat", "rb");
+    if (fp == NULL) {
+        printf("Save data failed: cannot open player.dat\n");
+        Player_Clear();
+        return;
+    }
+    fread(&Player,sizeof Player,1,fp);
+    Player.texture = PlayerTexture[Player.color];
+    fclose(fp);
+}
+
+void Player_Clear() {
     int tempW,tempH;
     SDL_QueryTexture(Player.texture,NULL,NULL,&tempW,&tempH);
     Player.w = (float)tempW;
     Player.h = (float)tempH;
-    Player_Clear();
-}
-
-static void Player_Clear() {
     Player.angle = 0;
     Player.statue = Normal;
     Player.combo = Player.score = 0;
@@ -69,4 +78,12 @@ void Player_Quit() {
     for (int i = 0; i < PlayerColorKinds; ++i) {
         SDL_DestroyTexture(PlayerTexture[i]);
     }
+    FILE *fp = NULL;
+    fp = fopen("player.dat", "wb");
+    if (fp == NULL) {
+        printf("Save data failed: cannot open player.dat\n");
+        return;
+    }
+    fwrite(&Player,sizeof Player,1,fp);
+    fclose(fp);
 }
